@@ -10,6 +10,7 @@ function App() {
   const [randomNumber,setRandomNumber] = useState(Math.floor(Math.random() * ( Math.floor(26)-Math.ceil(1))) + 1)
   const [selectedDifficulty,setSelectedDifficulty] = useState(0)
   const [inProgress,setInProgress] = useState(false)
+  const [intervalId, setIntervalId] = useState()
 
   const difficulties = [
     {
@@ -40,23 +41,19 @@ function App() {
     }
     setAlphabet([...alphabet])
   }
-  let interval
+
   const start =  () =>{
     setInProgress(true)
-    interval = setInterval(() => {
+    setIntervalId(setInterval(() => {
       setRandomNumber(Math.floor(Math.random() * ( Math.floor(26)-Math.ceil(1))) + 1)
-    }, difficulties[selectedDifficulty].timeout);
-    console.log(interval)
-    
+    }, difficulties[selectedDifficulty].timeout))
   }
   const stop =  () =>{
     setInProgress(false)
+    clearInterval(intervalId) 
     alphabet.forEach(i=>i.status='left')
     setAlphabet([...alphabet])
-   console.log(interval)
-    interval = clearInterval(interval) 
-
-
+   
   }
  
   return (
