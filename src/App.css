@@ -4,15 +4,13 @@
 
 #alphabet-container .letter{
   margin-right: 10px;
-}
-
-.miss {
-  color:red;
-}
-.hit{
-  color:green;
-}
-.left{
   color:blue;
+  padding:2px
 }
 
+.invalid {
+  color:red !important;
+}
+.correct{
+  color:green !important;
+}

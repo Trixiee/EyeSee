@@ -5,7 +5,7 @@ import './App.css';
 function App() {
   const [alphabet,setAlphabet] = useState('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(el => ({
     letter: el,
-    status: 'left'
+    status:'left'
   })))
   const [randomNumber,setRandomNumber] = useState(Math.floor(Math.random() * ( Math.floor(26)-Math.ceil(1))) + 1)
   const [selectedDifficulty,setSelectedDifficulty] = useState(0)
@@ -65,7 +65,7 @@ function App() {
       <div className="radio-buttons-container">
       {
          difficulties.map((i,index) => 
-          <><input type="radio" name="difficulty" checked={selectedDifficulty === i.id} key={i.id} onChange={()=>setSelectedDifficulty(index)} disabled={inProgress}/> {i.title}</>
+          <span key={i.id}><input type="radio" name="difficulty" checked={selectedDifficulty === i.id}  onChange={()=>setSelectedDifficulty(index)} disabled={inProgress}/> {i.title}</span>
         )
       }
       </div>
@@ -75,12 +75,12 @@ function App() {
         {
           alphabet.map(
             (i,index) =>
-              <span key={index} className="letter" style={i.status==="left" ? {color: 'blue'} : i.status==='invalid' ? {color: 'red'}:{color:'green'}}>{i.letter}</span>
+              <span key={index} className={`letter ${i.status !== "left" ? i.status==='invalid' ?'invalid':'correct' : ''}`}>{i.letter}</span>
             )
         }
       </div>
-        Hit:{alphabet.filter(i=>i.status==="correct").length}
-        Miss:{alphabet.filter(i=>i.status==="invalid").length}
+        Invalid:{alphabet.filter(i=>i.status==="correct").length}
+        Correct:{alphabet.filter(i=>i.status==="invalid").length}
         Left:{alphabet.filter(i=>i.status==="left").length}
     </>
   );
