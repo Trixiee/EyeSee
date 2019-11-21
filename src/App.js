@@ -5,16 +5,14 @@ import {Container,Row,Col,Button,Form} from 'react-bootstrap'
 import './App.css';
 
 function App() {
-  
-  const [alphabet,setAlphabet] = useState('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(el => ({
+  const [alphabet,setAlphabet] = useState('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map((el, ind) => ({
     letter: el,
-    status:'left'
+    status:'left',
+    number: ind + 1
   })))
-  const [randomNumber,setRandomNumber] = useState(Math.floor(Math.random() * ( Math.floor(26)-Math.ceil(1))) + 1)
+  const [randomNumber,setRandomNumber] = useState(Math.floor(Math.random() * alphabet.filter(i=>i.status==='left').length)+1)
   const [selectedDifficulty,setSelectedDifficulty] = useState(0)
   const [inProgress,setInProgress] = useState(false)
-  const [intervalId, setIntervalId] = useState()
-  
   const difficulties = [
     {
       id:0,
@@ -37,32 +35,40 @@ function App() {
   const letterInput = useRef("")
 
   const valid = () => {
-    if(letterInput.current.value.toUpperCase() === alphabet[randomNumber-1].letter){
+    if (letterInput.current.value.toUpperCase() === alphabet[randomNumber-1].letter ){
       alphabet[randomNumber-1].status='correct'
-    }else{
+    } else {
       alphabet[randomNumber-1].status='invalid'
     }
     setAlphabet([...alphabet])
   }
 
-  const start =  () =>{
+  const start = () =>{
     setInProgress(true)
-    setIntervalId(setInterval(() => {
+    window.intervalId=setInterval(() => {
       setRandomNumber(oldRandomValue => {
         if(letterInput.current.value===""){
           alphabet[oldRandomValue-1].status="invalid"
           setAlphabet([...alphabet])
         }
 
-        return Math.floor(Math.random() * ( Math.floor(26)-Math.ceil(1))) + 1
+        let left = alphabet.filter(i => i.status === 'left')
+        if (left.length===0) {
+          stop()
+          return Math.floor(Math.random() * alphabet.filter(i=>i.status==='left').length)
+        }
+        letterInput.current.value = "";
+        return left[Math.floor(Math.random() * left.length)].number
       })
-      letterInput.current.value = "";
-    }, difficulties[selectedDifficulty].timeout))
+      
+    }, difficulties[selectedDifficulty].timeout)
+   
   }
 
   const stop =  () =>{
     setInProgress(false)
-    clearInterval(intervalId) 
+    clearInterval(window.intervalId)
+     
     alphabet.forEach(i=>i.status='left')
     setAlphabet([...alphabet])
     letterInput.current.value = "";
