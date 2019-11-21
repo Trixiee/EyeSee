@@ -1,16 +1,22 @@
 #alphabet-container{
-  padding: 20px;
+  font-size:32px;
 }
 
 #alphabet-container .letter{
-  margin-right: 10px;
   color:blue;
-  padding:2px
 }
 
 .invalid {
   color:red !important;
 }
+
 .correct{
   color:green !important;
 }
+
+button{
+  border-radius: 0 !important;
+  width: 227px;
+  margin-top:2px;
+}
+

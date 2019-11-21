@@ -1,8 +1,11 @@
 import React,{useState,useRef} from 'react';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {Container,Row,Col,Button,Form} from 'react-bootstrap'
 import './App.css';
 
 function App() {
+  
   const [alphabet,setAlphabet] = useState('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(el => ({
     letter: el,
     status:'left'
@@ -11,7 +14,7 @@ function App() {
   const [selectedDifficulty,setSelectedDifficulty] = useState(0)
   const [inProgress,setInProgress] = useState(false)
   const [intervalId, setIntervalId] = useState()
-
+  
   const difficulties = [
     {
       id:0,
@@ -31,10 +34,10 @@ function App() {
     }
   ]
 
-  const input = useRef("")
+  const letterInput = useRef("")
 
   const valid = () => {
-    if(input.current.value.toUpperCase() === alphabet[randomNumber-1].letter){
+    if(letterInput.current.value.toUpperCase() === alphabet[randomNumber-1].letter){
       alphabet[randomNumber-1].status='correct'
     }else{
       alphabet[randomNumber-1].status='invalid'
@@ -45,42 +48,60 @@ function App() {
   const start =  () =>{
     setInProgress(true)
     setIntervalId(setInterval(() => {
-      setRandomNumber(Math.floor(Math.random() * ( Math.floor(26)-Math.ceil(1))) + 1)
+      setRandomNumber(oldRandomValue => {
+        if(letterInput.current.value===""){
+          alphabet[oldRandomValue-1].status="invalid"
+          setAlphabet([...alphabet])
+        }
+
+        return Math.floor(Math.random() * ( Math.floor(26)-Math.ceil(1))) + 1
+      })
+      letterInput.current.value = "";
     }, difficulties[selectedDifficulty].timeout))
   }
+
   const stop =  () =>{
     setInProgress(false)
     clearInterval(intervalId) 
     alphabet.forEach(i=>i.status='left')
     setAlphabet([...alphabet])
-   
+    letterInput.current.value = "";
   }
  
   return (
-    <>           
-    <button onClick={inProgress ? stop : start}>{inProgress?'Stop':'Start'}</button>
-      <div className="radio-buttons-container">
-      {
-         difficulties.map((i,index) => 
-          <span key={i.id}><input type="radio" name="difficulty" checked={selectedDifficulty === i.id}  onChange={()=>setSelectedDifficulty(index)} disabled={inProgress}/> {i.title}</span>
-        )
-      }
-      </div>
-      <input type="text" ref={input} onChange={valid} disabled={!inProgress}/>
-      {randomNumber}
-      <div id="alphabet-container">
-        {
-          alphabet.map(
-            (i,index) =>
-              <span key={index} className={`letter ${i.status !== "left" ? i.status==='invalid' ?'invalid':'correct' : ''}`}>{i.letter}</span>
-            )
-        }
-      </div>
-        Invalid:{alphabet.filter(i=>i.status==="correct").length}
-        Correct:{alphabet.filter(i=>i.status==="invalid").length}
-        Left:{alphabet.filter(i=>i.status==="left").length}
+    <>         
+      <Container>
+        <Row>   
+          <Col col={6} >
+            <div>
+              {
+                difficulties.map((i,index) =><Form.Check key={i.id+1} inline custom label={i.title} type="radio" id={i.id+1} checked={selectedDifficulty === i.id} disabled={inProgress} onChange={()=>setSelectedDifficulty(index)}/>)
+              }
+            </div>
+            <Button variant="primary" onClick={inProgress ? stop : start}>{inProgress?'Stop':'Start'}</Button>
+          </Col>
+          <Col col={6} className="d-flex justify-content-end"> 
+            <div>
+                <h5>SCORE</h5>
+                <h6 className="invalid">INVALID : {alphabet.filter(i=>i.status==="invalid").length}</h6>
+                <h6 className="correct">CORRECT : {alphabet.filter(i=>i.status==="correct").length}</h6>
+                <h6 style={{color: "blue"}}> LEFT : {alphabet.filter(i=>i.status==="left").length}</h6>
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={12} className="text-center">
+            <h1>{inProgress?randomNumber:'?'}</h1>
+            <Form.Control type="Text" placeholder="Letter"  ref={letterInput} onChange={valid} disabled={!inProgress} />
+          </Col>
+        </Row>
+        <Row id="alphabet-container">
+          {
+            alphabet.map((i,index) =><Col xs={1}  md={1} lg={1} key={index} className={`letter ${i.status !== "left" ? i.status==='invalid' ?'invalid':'correct' : ''}`}>{i.letter}</Col>)
+          }
+        </Row>
+      </Container>
     </>
   );
 }
-
 export default App;
